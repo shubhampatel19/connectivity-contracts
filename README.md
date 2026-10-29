@@ -2,10 +2,10 @@
 
 The wire contracts every Connectivity component shares: the HTTP payloads devices send, the Kafka message formats, and the topic names.
 
-Part of [Connectivity](https://github.com/spr732/connectivity-platform), a mock edge-to-cloud telemetry system built for practicing production debugging.
+Part of [Connectivity](https://github.com/shubhampatel19/connectivity-platform), a mock edge-to-cloud telemetry system built for practicing production debugging.
 
 ```go
-import "github.com/spr732/connectivity-contracts/wire"
+import "github.com/shubhampatel19/connectivity-contracts/wire"
 ```
 
 ## Compatibility rules
