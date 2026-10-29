@@ -8,6 +8,14 @@ Part of [Connectivity](https://github.com/shubhampatel19/connectivity-platform),
 import "github.com/shubhampatel19/connectivity-contracts/wire"
 ```
 
+## What's in here
+
+| Contract | File | Transport |
+|---|---|---|
+| Registration, heartbeats, telemetry batches | `wire/wire.go` | HTTP from devices; `device.events` and `telemetry.raw` in Kafka |
+| Log bundles (chunked, resumable) | `wire/bundle.go` | HTTP from devices; `bundles.uploaded` in Kafka |
+| Device alerts | `wire/alert.go` | `POST /v1/alerts` from devices; `device.alerts` in Kafka, keyed by device |
+
 ## Compatibility rules
 
 Devices in the field keep running old agent versions for months. The cloud must accept every payload an older agent can still send.
