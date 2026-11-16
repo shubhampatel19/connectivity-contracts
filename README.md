@@ -15,6 +15,10 @@ import "github.com/shubhampatel19/connectivity-contracts/wire"
 | Registration, heartbeats, telemetry batches | `wire/wire.go` | HTTP from devices; `device.events` and `telemetry.raw` in Kafka |
 | Log bundles (chunked, resumable) | `wire/bundle.go` | HTTP from devices; `bundles.uploaded` in Kafka |
 | Device alerts | `wire/alert.go` | `POST /v1/alerts` from devices; `device.alerts` in Kafka, keyed by device |
+| Text and metric name rules | `wire/text.go` | applied by every `Validate` |
+| Dead-letter topics | `wire/deadletter.go` | `<topic>.dlq` in Kafka, with `x-dlq-*` headers |
+
+See [docs/DESIGN.md](docs/DESIGN.md) for how the contracts fit together and why they are shaped this way.
 
 ## Compatibility rules
 

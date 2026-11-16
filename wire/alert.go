@@ -83,6 +83,8 @@ func (a DeviceAlert) Validate(now time.Time) error {
 		return fmt.Errorf("%w: unknown severity %q", ErrInvalid, a.Severity)
 	case len(a.Message) > MaxAlertMessageLen:
 		return fmt.Errorf("%w: message is %d bytes, max is %d", ErrInvalid, len(a.Message), MaxAlertMessageLen)
+	case !ValidText(a.Message):
+		return fmt.Errorf("%w: message must be valid UTF-8 with no control characters", ErrInvalid)
 	case a.ObservedAt.IsZero():
 		return fmt.Errorf("%w: observed_at is required", ErrInvalid)
 	case a.ObservedAt.After(now.Add(MaxClockSkew)):

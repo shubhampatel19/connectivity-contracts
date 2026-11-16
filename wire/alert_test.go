@@ -80,3 +80,15 @@ func TestDeviceAlertJSONFieldNames(t *testing.T) {
 		}
 	}
 }
+
+func TestDeviceAlertRejectsControlCharactersInMessage(t *testing.T) {
+	now := time.Now()
+	a := DeviceAlert{AlertID: "a1", DeviceID: "d1", Code: AlertThermalCritical, Severity: SeverityCritical, Message: "cpu 91\x00C", ObservedAt: now}
+	if err := a.Validate(now); !errors.Is(err, ErrInvalid) {
+		t.Fatalf("got %v, want ErrInvalid", err)
+	}
+	a.Message = "cpu 91.5°C, fan1 0 rpm"
+	if err := a.Validate(now); err != nil {
+		t.Fatalf("printable message rejected: %v", err)
+	}
+}

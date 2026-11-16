@@ -28,6 +28,22 @@ type RegisterRequest struct {
 	SiteID   string `json:"site_id"`
 }
 
+// Validate checks a registration before it is published. Every field here
+// ends up in the devices table.
+func (r RegisterRequest) Validate() error {
+	switch {
+	case !ValidID(r.DeviceID):
+		return fmt.Errorf("%w: device_id must be 1-64 characters of letters, digits, '-' or '_'", ErrInvalid)
+	case r.SiteID != "" && !ValidID(r.SiteID):
+		return fmt.Errorf("%w: site_id must be 1-64 characters of letters, digits, '-' or '_'", ErrInvalid)
+	case len(r.Model) > MaxDeviceAttrLen || !ValidText(r.Model):
+		return fmt.Errorf("%w: model must be at most %d bytes of printable text", ErrInvalid, MaxDeviceAttrLen)
+	case len(r.Firmware) > MaxDeviceAttrLen || !ValidText(r.Firmware):
+		return fmt.Errorf("%w: firmware must be at most %d bytes of printable text", ErrInvalid, MaxDeviceAttrLen)
+	}
+	return nil
+}
+
 type RegisterResponse struct {
 	DeviceID string `json:"device_id"`
 	Token    string `json:"token"`
@@ -51,8 +67,12 @@ func (b TelemetryBatch) Validate(now time.Time) error {
 	switch {
 	case b.BatchID == "":
 		return fmt.Errorf("%w: batch_id is required", ErrInvalid)
+	case !ValidID(b.BatchID):
+		return fmt.Errorf("%w: batch_id must be 1-64 characters of letters, digits, '-' or '_'", ErrInvalid)
 	case b.DeviceID == "":
 		return fmt.Errorf("%w: device_id is required", ErrInvalid)
+	case !ValidID(b.DeviceID):
+		return fmt.Errorf("%w: device_id must be 1-64 characters of letters, digits, '-' or '_'", ErrInvalid)
 	case len(b.Samples) == 0:
 		return fmt.Errorf("%w: batch has no samples", ErrInvalid)
 	case len(b.Samples) > MaxSamplesPerBatch:
@@ -63,6 +83,8 @@ func (b TelemetryBatch) Validate(now time.Time) error {
 		switch {
 		case s.Metric == "":
 			return fmt.Errorf("%w: sample %d has no metric name", ErrInvalid, i)
+		case !ValidMetric(s.Metric):
+			return fmt.Errorf("%w: sample %d metric name must be lower-case letters, digits, '_' or '.', at most %d characters", ErrInvalid, i, MaxMetricNameLen)
 		case s.TS.IsZero():
 			return fmt.Errorf("%w: sample %d has no timestamp", ErrInvalid, i)
 		case s.TS.After(limit):
